@@ -20,6 +20,14 @@ employeeRouter.post("/create", async (req, res) => {
   }
 });
 
+employeeRouter.get("/getemployee", async (req, res) => {
+  try {
+    const getEmployee = await EmployeeModel.find();
+    res.status(200).send(getEmployee);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
 // Get employee by ID
 employeeRouter.get('/getemployee/:id', async (req, res) => {
   try {
