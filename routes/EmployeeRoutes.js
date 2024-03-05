@@ -19,10 +19,36 @@ employeeRouter.post("/create", async (req, res) => {
     res.status(500).json(error);
   }
 });
-employeeRouter.get("/getemployee", async (req, res) => {
+
+// Get employee by ID
+employeeRouter.get('/getemployee/:id', async (req, res) => {
   try {
-    const getEmployee = await EmployeeModel.find();
-    res.status(200).send(getEmployee);
+    const employee = await EmployeeModel.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+    res.status(200).send(employee);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+// Search employees by name and address
+employeeRouter.get('/searchemployee', async (req, res) => {
+  try {
+    const { name, address } = req.query;
+    
+   
+    const query = {};
+    if (name) {
+      query.name = { $regex: new RegExp(name, 'i') }; 
+    }
+    if (address) {
+      query.address = { $regex: new RegExp(address, 'i') }; 
+    }
+
+    const employees = await EmployeeModel.find(query);
+    res.status(200).send(employees);
   } catch (error) {
     res.status(500).json(error);
   }
