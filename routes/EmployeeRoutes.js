@@ -33,25 +33,37 @@ employeeRouter.get('/getemployee/:id', async (req, res) => {
   }
 });
 
-// Search employees by name and address
-employeeRouter.get('/searchemployee', async (req, res) => {
+// Update employee by ID
+employeeRouter.put('/updateemployee/:id', async (req, res) => {
   try {
-    const { name, address } = req.query;
-    
-   
-    const query = {};
-    if (name) {
-      query.name = { $regex: new RegExp(name, 'i') }; 
+    const updatedEmployee = await EmployeeModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: 'Employee not found' });
     }
-    if (address) {
-      query.address = { $regex: new RegExp(address, 'i') }; 
-    }
-
-    const employees = await EmployeeModel.find(query);
-    res.status(200).send(employees);
+    res.status(200).json(updatedEmployee);
   } catch (error) {
     res.status(500).json(error);
   }
 });
+
+// Delete employee by ID
+employeeRouter.delete('/deleteemployee/:id', async (req, res) => {
+  try {
+    const deletedEmployee = await EmployeeModel.findByIdAndDelete(req.params.id);
+    if (!deletedEmployee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+    res.status(200).json({ message: 'Employee deleted successfully' });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+
+
 
 export default employeeRouter;
